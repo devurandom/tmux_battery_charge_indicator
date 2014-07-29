@@ -29,15 +29,17 @@ HEART='♥'
 SLOTS_MAX=10
 SLOTS_WARNING=5
 SLOTS_CRITICAL=3
+SLOTS_ALERT=2
 
 BATTERY=BAT1
 
 while [ $# -gt 0 ] ; do
 	case $1 in
-		percent) unset HEART ; SLOTS_MAX=100 ; SLOTS_WARNING=50 ; SLOTS_CRITICAL=30 ;;
+		percent) unset HEART ; SLOTS_MAX=100 ; SLOTS_WARNING=50 ; SLOTS_CRITICAL=30 ; SLOTS_ALERT=20 ;;
 		slots_max=*) SLOTS_MAX=${1##slots_max=} ;;
 		slots_warning=*) SLOTS_WARNING=${1##slots_warning=} ;;
 		slots_critical=*) SLOTS_CRITICAL=${1##slots_critical=} ;;
+		slots_alert=*) SLOTS_ALERT=${1##slots_alert=} ;;
 		battery=*) BATTERY=${1##battery=} ;;
 	esac
 	shift
@@ -59,7 +61,7 @@ if [[ ${charged_slots} -gt ${SLOTS_MAX} ]] ; then
 fi
 
 if [[ "${HEART}" ]] ; then
-	if [ "${charged_slots}" -lt "${SLOTS_CRITICAL}" ] ; then
+	if [ "${charged_slots}" -lt "${SLOTS_ALERT}" ] ; then
 		echo -n '#[fg=red,blink]'
 	else
 		echo -n '#[fg=red]'
@@ -72,8 +74,10 @@ if [[ "${HEART}" ]] ; then
 		echo -n "${HEART}"
 	done
 else
-	if [ "${charged_slots}" -lt "${SLOTS_CRITICAL}" ] ; then
+	if [ "${charged_slots}" -lt "${SLOTS_ALERT}" ] ; then
 		echo -n '#[fg=red,blink]'
+	elif [ "${charged_slots}" -lt "${SLOTS_CRITICAL}" ] ; then
+		echo -n '#[fg=red]'
 	elif [ "${charged_slots}" -lt "${SLOTS_WARNING}" ] ; then
 		echo -n '#[fg=yellow]'
 	else
